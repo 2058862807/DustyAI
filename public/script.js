@@ -87,7 +87,7 @@ function addMessage(text, sender = 'user') {
         messageDiv.textContent = text;
     } else if (sender === 'ai') {
         messageDiv.classList.add('ai-message');
-        messageDiv.innerHTML = text; // Allow HTML for links
+        messageDiv.innerHTML = text;
     } else {
         messageDiv.classList.add('system-message');
         messageDiv.textContent = text;
