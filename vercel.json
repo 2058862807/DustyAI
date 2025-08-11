@@ -8,24 +8,15 @@
       }
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/",
-      "destination": "/public/index.html"
+      "src": "/api/(.*)",
+      "dest": "api/assistant.py"
     },
     {
-      "source": "/api/(.*)",
-      "destination": "api/assistant.py"
-    },
-    {
-      "source": "/([^/]+\\.[^/]+)$",
-      "destination": "/public/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/public/index.html"
+      "src": "/(.*)",
+      "dest": "public/index.html"
     }
   ],
-  "cleanUrls": true,
   "trailingSlash": false
 }
