@@ -4,14 +4,23 @@
       "src": "api/assistant.py",
       "use": "@vercel/python",
       "config": {
-        "pythonVersion": "3.10"
+        "pythonVersion": "3.10",
+        "maxLambdaSize": "250mb"
       }
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/",
+      "dest": "public/index.html"
+    },
+    {
+      "src": "/api/(.*)",
       "dest": "api/assistant.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "public/$1"
     }
   ]
 }
