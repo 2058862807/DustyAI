@@ -140,7 +140,8 @@ async function sendMessage() {
         });
         
         if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`API error: ${response.status} - ${errorText}`);
         }
         
         const result = await response.json();
