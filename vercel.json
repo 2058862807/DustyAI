@@ -8,14 +8,26 @@
       }
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "api/assistant.py"
+      "src": "/api/(.*)",
+      "dest": "api/assistant.py"
     },
     {
-      "source": "/(.*)",
-      "destination": "/public/index.html"
+      "src": "/",
+      "dest": "public/index.html"
+    },
+    {
+      "src": "/style.css",
+      "dest": "public/style.css"
+    },
+    {
+      "src": "/script.js",
+      "dest": "public/script.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "public/index.html"
     }
   ]
 }
