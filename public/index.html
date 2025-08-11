@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal AI Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="card">
+                <div class="api-config">
+                    <h2 class="config-title">API Configuration</h2>
+                    <div class="form-group">
+                        <label for="deepseek-key">DeepSeek API Key</label>
+                        <input type="password" id="deepseek-key" placeholder="Enter your DeepSeek API key">
+                    </div>
+                    <button id="save-config" class="btn">Save Configuration</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="status">
+                    <div class="status-indicator" id="status-indicator"></div>
+                    <div class="status-text" id="status-text">Disconnected</div>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <div class="card">
+                <header>
+                    <div class="logo">
+                        <div class="logo-icon">🤖</div>
+                        <div>Personal AI Assistant</div>
+                    </div>
+                    <button class="theme-toggle" id="theme-toggle">🌙</button>
+                </header>
+                
+                <div class="chat-container">
+                    <div class="chat-history" id="chat-history">
+                        <div class="message system-message">
+                            Welcome to your personal AI assistant! I can help with emails, website deployment, and more.
+                            <br>Try: "Deploy a contact page" or "Email my team about the meeting"
+                        </div>
+                    </div>
+                    
+                    <div class="input-container">
+                        <input type="text" id="user-input" placeholder="What do you want me to do?">
+                        <button id="send-btn">➤</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon">📧</div>
+                        <div class="feature-title">Email Management</div>
+                    </div>
+                    <div class="feature-desc">
+                        Send, read, and manage your emails directly through your AI assistant.
+                    </div>
+                    <button class="feature-btn" data-command="Show me my recent emails">View Emails</button>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon">🌐</div>
+                        <div class="feature-title">Website Deployment</div>
+                    </div>
+                    <div class="feature-desc">
+                        Create and deploy websites instantly with a single command.
+                    </div>
+                    <button class="feature-btn" data-command="Deploy a portfolio website with dark theme">Deploy Site</button>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon">📞</div>
+                        <div class="feature-title">Call Management</div>
+                    </div>
+                    <div class="feature-desc">
+                        Handle calls, take messages, and manage your communications.
+                    </div>
+                    <button class="feature-btn" data-command="Check my missed calls">Call Logs</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
