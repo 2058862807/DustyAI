@@ -29,23 +29,11 @@ class handler(BaseHTTPRequestHandler):
                 return
             
             # Serve static files from public directory
-            if self.path.startswith('/public/'):
-                # Construct safe file path
-                file_path = '.' + self.path
-                
-                # Security check to prevent path traversal
-                if '..' in file_path or not os.path.exists(file_path):
-                    self.send_response_with_cors(404, body=b'File not found')
-                    return
-                
-                # Determine content type
-                content_type, _ = mimetypes.guess_type(file_path)
-                if not content_type:
-                    content_type = "application/octet-stream"
-                
-                # Read and serve file
-                with open(file_path, 'rb') as file:
-                    self.send_response_with_cors(200, content_type, file.read())
+            if self.path == '/style.css':
+                self.serve_static_file('public/style.css', 'text/css')
+                return
+            elif self.path == '/script.js':
+                self.serve_static_file('public/script.js', 'application/javascript')
                 return
             
             # API endpoint not found
@@ -57,6 +45,15 @@ class handler(BaseHTTPRequestHandler):
             self.send_response_with_cors(500, body=json.dumps(
                 {"error": f"Internal server error: {str(e)}"}
             ).encode('utf-8'))
+    
+    def serve_static_file(self, file_path, content_type):
+        """Serve a static file with proper content type"""
+        if not os.path.exists(file_path):
+            self.send_response_with_cors(404, body=b'File not found')
+            return
+        
+        with open(file_path, 'rb') as file:
+            self.send_response_with_cors(200, content_type, file.read())
     
     def do_POST(self):
         try:
