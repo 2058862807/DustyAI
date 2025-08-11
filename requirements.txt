@@ -1,0 +1,5 @@
+streamlit==1.32.2
+python-dotenv==1.0.1
+requests==2.31.0
+pyngrok==7.0.0
+vercel==0.17.0
