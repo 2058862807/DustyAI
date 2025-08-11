@@ -4,25 +4,37 @@ import os
 import requests
 
 class handler(BaseHTTPRequestHandler):
+    def set_headers(self):
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+    
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.set_headers()
+        self.end_headers()
+    
     def do_POST(self):
         try:
-            content_length = int(self.headers['Content-Length'])
+            content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length)
             data = json.loads(post_data)
             
             # Get DeepSeek API key from environment
             deepseek_key = os.getenv('DEEPSEEK_API_KEY', '')
             
-            # Process the command using DeepSeek API
+            # Process the command
             result = self.process_command(data['command'], deepseek_key)
             
             self.send_response(200)
-            self.send_header('Content-type', 'application/json')
+            self.set_headers()
             self.end_headers()
             self.wfile.write(json.dumps(result).encode('utf-8'))
+            
         except Exception as e:
             self.send_response(500)
-            self.send_header('Content-type', 'application/json')
+            self.set_headers()
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
     
