@@ -8,15 +8,14 @@
       }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "api/assistant.py"
+      "source": "/api/(.*)",
+      "destination": "api/assistant.py"
     },
     {
-      "src": "/(.*)",
-      "dest": "public/index.html"
+      "source": "/(.*)",
+      "destination": "/public/index.html"
     }
-  ],
-  "trailingSlash": false
+  ]
 }
