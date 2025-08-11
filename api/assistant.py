@@ -3,46 +3,72 @@ import json
 import os
 import requests
 import time
+import mimetypes
 
 class handler(BaseHTTPRequestHandler):
-    def set_headers(self, status_code=200):
+    def send_response_with_cors(self, status_code, content_type="application/json", body=None):
         self.send_response(status_code)
-        self.send_header('Content-type', 'application/json')
+        self.send_header('Content-type', content_type)
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
+        if body:
+            self.wfile.write(body)
     
     def do_OPTIONS(self):
-        self.set_headers(200)
+        self.send_response_with_cors(200)
     
     def do_GET(self):
-        # Simple health check endpoint
-        if self.path == '/api/health':
-            self.set_headers(200)
-            self.wfile.write(json.dumps(
-                {"status": "ok", "time": time.time()}
-            ).encode('utf-8'))
-        else:
-            self.set_headers(404)
-            self.wfile.write(json.dumps(
+        try:
+            # Health check endpoint
+            if self.path == '/api/health':
+                self.send_response_with_cors(200, body=json.dumps(
+                    {"status": "ok", "time": time.time()}
+                ).encode('utf-8'))
+                return
+            
+            # Serve static files from public directory
+            if self.path.startswith('/public/'):
+                # Construct safe file path
+                file_path = '.' + self.path
+                
+                # Security check to prevent path traversal
+                if '..' in file_path or not os.path.exists(file_path):
+                    self.send_response_with_cors(404, body=b'File not found')
+                    return
+                
+                # Determine content type
+                content_type, _ = mimetypes.guess_type(file_path)
+                if not content_type:
+                    content_type = "application/octet-stream"
+                
+                # Read and serve file
+                with open(file_path, 'rb') as file:
+                    self.send_response_with_cors(200, content_type, file.read())
+                return
+            
+            # API endpoint not found
+            self.send_response_with_cors(404, body=json.dumps(
                 {"error": "Not found", "path": self.path}
+            ).encode('utf-8'))
+            
+        except Exception as e:
+            self.send_response_with_cors(500, body=json.dumps(
+                {"error": f"Internal server error: {str(e)}"}
             ).encode('utf-8'))
     
     def do_POST(self):
         try:
-            # Handle CORS preflight
             if self.path != '/api/assistant':
-                self.set_headers(404)
-                self.wfile.write(json.dumps(
+                self.send_response_with_cors(404, body=json.dumps(
                     {"error": "Invalid endpoint"}
                 ).encode('utf-8'))
                 return
                 
             content_length = int(self.headers.get('Content-Length', 0))
             if content_length == 0:
-                self.set_headers(400)
-                self.wfile.write(json.dumps(
+                self.send_response_with_cors(400, body=json.dumps(
                     {"error": "Empty request body"}
                 ).encode('utf-8'))
                 return
@@ -53,8 +79,7 @@ class handler(BaseHTTPRequestHandler):
             
             # Validate request structure
             if 'command' not in data:
-                self.set_headers(400)
-                self.wfile.write(json.dumps(
+                self.send_response_with_cors(400, body=json.dumps(
                     {"error": "Missing 'command' field"}
                 ).encode('utf-8'))
                 return
@@ -66,17 +91,14 @@ class handler(BaseHTTPRequestHandler):
             result = self.process_command(data['command'], deepseek_key)
             
             # Return successful response
-            self.set_headers(200)
-            self.wfile.write(json.dumps(result).encode('utf-8'))
+            self.send_response_with_cors(200, body=json.dumps(result).encode('utf-8'))
             
         except json.JSONDecodeError:
-            self.set_headers(400)
-            self.wfile.write(json.dumps(
+            self.send_response_with_cors(400, body=json.dumps(
                 {"error": "Invalid JSON format"}
             ).encode('utf-8'))
         except Exception as e:
-            self.set_headers(500)
-            self.wfile.write(json.dumps(
+            self.send_response_with_cors(500, body=json.dumps(
                 {"error": f"Internal server error: {str(e)}"}
             ).encode('utf-8'))
     
@@ -118,7 +140,6 @@ class handler(BaseHTTPRequestHandler):
                 timeout=30
             )
             response.raise_for_status()
-            processing_time = time.time() - start_time
             
             content = response.json()['choices'][0]['message']['content']
             
@@ -135,12 +156,6 @@ class handler(BaseHTTPRequestHandler):
                 result["action"] = "email"
                 result["response"] = f"📧 Email prepared!\n{content}"
                 
-            # Add performance metrics
-            result["metrics"] = {
-                "processing_time": round(processing_time, 2),
-                "tokens_used": response.json()['usage']['total_tokens']
-            }
-            
             return result
             
         except requests.exceptions.Timeout:
