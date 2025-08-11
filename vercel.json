@@ -18,7 +18,7 @@
       "destination": "api/assistant.py"
     },
     {
-      "source": "/(.*\\.(css|js|png|svg|ico))",
+      "source": "/([^/]+\\.[^/]+)$",
       "destination": "/public/$1"
     },
     {
