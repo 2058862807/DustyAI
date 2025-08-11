@@ -1,0 +1,8 @@
+# .vercelignore
+app/
+*_test.py
+*.md
+*.log
+*.env
+venv/
+__pycache__/
